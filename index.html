@@ -3,61 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oyun Gezegeni</title>
+    <title>PixiVerse - Oyun Evreni</title>
     <style>
-        /* Genel Ayarlar */
+        /* CSS Değişkenleri (Temalar için dinamik renkler) */
+        :root {
+            --ana-renk: #ff4757; /* Varsayılan Mercan Kırmızı */
+            --arka-plan: #0f0f12;
+            --panel-arkaplan: #16161e;
+            --yazi-rengi: #ffffff;
+            --parlaklik: 100%;
+        }
+
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--arka-plan);
+            color: var(--yazi-rengi);
+            filter: brightness(var(--parlaklik));
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            transition: background 0.3s, filter 0.2s;
         }
 
-        /* Sol Üst Ayarlar Paneli */
-        .settings-panel {
+        /* Gelişmiş Sol Üst Menü */
+        .settings-container {
             position: fixed;
             top: 20px;
             left: 20px;
-            background-color: #1e1e1e;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             z-index: 100;
+            width: 280px;
         }
-        .settings-panel h3 { margin: 0 0 10px 0; font-size: 16px; }
-        .settings-panel button {
-            background-color: #ff4757;
+
+        .settings-btn {
+            background-color: var(--ana-renk);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            width: 100%;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        /* Aşağı Doğru Açılan Panel */
+        .settings-dropdown {
+            background-color: var(--panel-arkaplan);
+            border-radius: 8px;
+            margin-top: 8px;
+            padding: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            display: none; /* Varsayılan olarak gizli */
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #2a2a35;
+        }
+
+        .settings-dropdown h3 { margin: 15px 0 8px 0; font-size: 15px; color: #888; text-transform: uppercase; }
+        .settings-dropdown h3:first-child { margin-top: 0; }
+
+        /* Renk Paleti (15 Renk) */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        .color-dot {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .color-dot:hover { transform: scale(1.1); border-color: white; }
+
+        /* Parlaklık Çubuğu */
+        .slider {
+            width: 100%;
+            accent-color: var(--ana-renk);
             cursor: pointer;
         }
 
-        /* Arama Alanı (Ekranın Ortası) */
+        /* Haberler Alanı */
+        .news-box {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #ccc;
+        }
+
+        /* Orta Arama ve Başlık Alanı */
         .hero-section {
             text-align: center;
-            margin-top: 15vh;
-            margin-bottom: 50px;
+            margin-top: 12vh;
+            margin-bottom: 30px;
         }
-        .hero-section h1 { font-size: 3rem; margin-bottom: 20px; }
+        .hero-section h1 { font-size: 3.5rem; margin-bottom: 10px; letter-spacing: 2px; }
+        .hero-section h1 span { color: var(--ana-renk); }
+        
         .search-bar {
-            width: 400px;
-            max-width: 80%;
-            padding: 15px 20px;
+            width: 450px;
+            max-width: 90%;
+            padding: 15px 25px;
             font-size: 18px;
-            border: 2px solid #2e2e2e;
+            border: 2px solid #2a2a35;
             border-radius: 30px;
-            background-color: #1e1e1e;
+            background-color: var(--panel-arkaplan);
             color: white;
             outline: none;
             transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .search-bar:focus { border-color: #ff4757; }
+        .search-bar:focus { border-color: var(--ana-renk); }
+
+        /* Kategori Butonları */
+        .category-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .cat-btn {
+            background-color: var(--panel-arkaplan);
+            color: white;
+            border: 1px solid #2a2a35;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cat-btn:hover, .cat-btn.active {
+            background-color: var(--ana-renk);
+            border-color: var(--ana-renk);
+        }
 
         /* Oyun Listesi Alanı */
         .games-container {
@@ -66,75 +152,167 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 25px;
-            padding-bottom: 50px;
+            padding-bottom: 100px;
         }
 
-        /* Oyun Kartı Tasarımı */
+        /* Oyun Kartı */
         .game-card {
-            background-color: #1e1e1e;
-            border-radius: 10px;
+            background-color: var(--panel-arkaplan);
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
             text-decoration: none;
             color: white;
+            border: 1px solid #2a2a35;
         }
-        .game-card:hover { transform: translateY(-5px); }
+        .game-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
         .game-thumb {
             width: 100%;
             height: 150px;
-            background-color: #2e2e2e;
+            background: linear-gradient(135deg, #1e1e2f, #2a2a40);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 50px;
         }
         .game-info { padding: 15px; }
-        .game-info h3 { margin: 0 0 10px 0; }
-        .game-info p { margin: 0; color: #aaa; font-size: 14px; }
+        .game-info h3 { margin: 0 0 5px 0; font-size: 18px; }
+        .game-info p { margin: 0 0 10px 0; color: #aaa; font-size: 13px; }
+        .game-tag {
+            display: inline-block;
+            background-color: rgba(255,255,255,0.1);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
-    <div class="settings-panel">
-        <h3>⚙️ Ayarlar</h3>
-        <button onclick="alert('Koyu mod aktif!')">Tema Değiştir</button>
+    <div class="settings-container">
+        <button class="settings-btn" onclick="toggleMenu()">⚙️ Kontrol Paneli ▼</button>
+        <div class="settings-dropdown" id="myDropdown">
+            
+            <h3>🎨 Tema Renkleri (15 Renk)</h3>
+            <div class="color-grid">
+                <div class="color-dot" style="background:#ff4757;" onclick="changeColor('#ff4757')"></div>
+                <div class="color-dot" style="background:#2ed573;" onclick="changeColor('#2ed573')"></div>
+                <div class="color-dot" style="background:#1e90ff;" onclick="changeColor('#1e90ff')"></div>
+                <div class="color-dot" style="background:#ffa502;" onclick="changeColor('#ffa502')"></div>
+                <div class="color-dot" style="background:#9b59b6;" onclick="changeColor('#9b59b6')"></div>
+                <div class="color-dot" style="background:#fd79a8;" onclick="changeColor('#fd79a8')"></div>
+                <div class="color-dot" style="background:#00cec9;" onclick="changeColor('#00cec9')"></div>
+                <div class="color-dot" style="background:#eccc68;" onclick="changeColor('#eccc68')"></div>
+                <div class="color-dot" style="background:#ff6b81;" onclick="changeColor('#ff6b81')"></div>
+                <div class="color-dot" style="background:#78e08f;" onclick="changeColor('#78e08f')"></div>
+                <div class="color-dot" style="background:#38ada9;" onclick="changeColor('#38ada9')"></div>
+                <div class="color-dot" style="background:#4a69bd;" onclick="changeColor('#4a69bd')"></div>
+                <div class="color-dot" style="background:#60a3bc;" onclick="changeColor('#60a3bc')"></div>
+                <div class="color-dot" style="background:#f1c40f;" onclick="changeColor('#f1c40f')"></div>
+                <div class="color-dot" style="background:#e74c3c;" onclick="changeColor('#e74c3c')"></div>
+            </div>
+
+            <h3>☀️ Ekran Parlaklığı</h3>
+            <input type="range" min="30" max="100" value="100" class="slider" oninput="changeBrightness(this.value)">
+
+            <h3>📰 Oyun Haberleri</h3>
+            <div class="news-box">
+                <strong>[YENİ]</strong> PixiVerse Platformu Yayınlandı! Yeni oyunlar çok yakında eklenecektir. Takipte kalın!
+            </div>
+
+        </div>
     </div>
 
     <div class="hero-section">
-        <h1>Oyun Dünyası</h1>
-        <input type="text" class="search-bar" id="search" placeholder="Oyun ara..." onkeyup="searchGame()">
+        <h1>Pixi<span>Verse</span></h1>
+        <input type="text" class="search-bar" id="search" placeholder="Oyunlarda veya kategorilerde ara..." onkeyup="filterGames()">
+    </div>
+
+    <div class="category-container">
+        <button class="cat-btn active" onclick="filterCategory('hepsi', this)">Hepsi</button>
+        <button class="cat-btn" onclick="filterCategory('fps', this)">FPS</button>
+        <button class="cat-btn" onclick="filterCategory('hayatta-kalma', this)">Hayatta Kalma</button>
+        <button class="cat-btn" onclick="filterCategory('macera', this)">Macera</button>
+        <button class="cat-btn" onclick="filterCategory('yaris', this)">Yarış</button>
     </div>
 
     <div class="games-container" id="gamesList">
         
-        <a href="oyunlar/tetris/index.html" class="game-card" data-name="tetris">
-            <div class="game-thumb">🧱</div>
+        <a href="oyunlar/doom/index.html" class="game-card" data-name="doom askeri fps silah" data-cat="fps">
+            <div class="game-thumb">💥</div>
             <div class="game-info">
-                <h3>Tetris Klasik</h3>
-                <p>Blokları yerleştir ve puanları topla!</p>
+                <h3>Uzay Operasyonu</h3>
+                <p>Düşmanları etkisiz hale getir ve üssü koru.</p>
+                <span class="game-tag">FPS</span>
             </div>
         </a>
 
-        <a href="oyunlar/yaris/index.html" class="game-card" data-name="hızlı yarış">
+        <a href="oyunlar/ada/index.html" class="game-card" data-name="ıssız ada hayatta kalma zombi craft" data-cat="hayatta-kalma">
+            <div class="game-thumb">🌲</div>
+            <div class="game-info">
+                <h3>Adada 100 Gün</h3>
+                <p>Doğaya karşı diren, kaynak topla ve hayatta kal.</p>
+                <span class="game-tag">Hayatta Kalma</span>
+            </div>
+        </a>
+
+        <a href="oyunlar/yaris/index.html" class="game-card" data-name="hızlı yarış araba hız" data-cat="yaris">
             <div class="game-thumb">🏎️</div>
             <div class="game-info">
-                <h3>Hızlı Yarış</h3>
-                <p>En hızlı sen ol, rakiplerini ele.</p>
+                <h3>Asfalt Canavarları</h3>
+                <p>En hızlı sen ol, rakiplerini geride bırak.</p>
+                <span class="game-tag">Yarış</span>
             </div>
         </a>
 
         </div>
 
     <script>
-        // Basit Arama Fonksiyonu
-        function searchGame() {
+        let akitfKategori = 'hepsi';
+
+        // Sol menüyü açıp kapatan fonksiyon
+        function toggleMenu() {
+            let dropdown = document.getElementById("myDropdown");
+            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+        }
+
+        // Temanın rengini değiştiren fonksiyon
+        function changeColor(color) {
+            document.documentElement.style.setProperty('--ana-renk', color);
+        }
+
+        // Parlaklığı değiştiren fonksiyon
+        function changeBrightness(val) {
+            document.documentElement.style.setProperty('--parlaklik', val + '%');
+        }
+
+        // Kategoriye göre filtreleme fonksiyonu
+        function filterCategory(cat, btn) {
+            akitfKategori = cat;
+            
+            // Aktif buton rengini güncelleme
+            let buttons = document.getElementsByClassName('cat-btn');
+            for(let b of buttons) b.classList.remove('active');
+            btn.classList.add('active');
+
+            filterGames(); // Arama çubuğuyla entegre çalışması için tetikliyoruz
+        }
+
+        // Akıllı Gelişmiş Arama Fonksiyonu (Hem arama kutusuna hem kategoriye bakar)
+        function filterGames() {
             let input = document.getElementById('search').value.toLowerCase();
             let cards = document.getElementsByClassName('game-card');
             
             for (let i = 0; i < cards.length; i++) {
                 let name = cards[i].getAttribute('data-name');
-                if (name.includes(input)) {
+                let cat = cards[i].getAttribute('data-cat');
+                
+                let aramaEslesti = name.includes(input);
+                let kategoriEslesti = (akitfKategori === 'hepsi' || cat === akitfKategori);
+
+                if (aramaEslesti && kategoriEslesti) {
                     cards[i].style.display = "";
                 } else {
                     cards[i].style.display = "none";
