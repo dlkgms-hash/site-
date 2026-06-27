@@ -128,6 +128,35 @@
             letter-spacing: 1px;
         }
 
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            width: 85%;
+            max-width: 1200px;
+            margin-bottom: 40px;
+        }
+
+        .cat-box {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), var(--panel-arkaplan);
+            border: 1px solid #2a2a35;
+            padding: 20px 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+        .cat-box:hover, .cat-box.active {
+            border-color: var(--ana-renk);
+            transform: translateY(-3px);
+            background: var(--ana-renk);
+            color: white;
+        }
+
         .games-container {
             width: 85%;
             max-width: 1200px;
@@ -225,7 +254,7 @@
                 <div class="color-dot" style="background:#277976;" onclick="changeBgColor('#277976')"></div>
                 <div class="color-dot" style="background:#344a85;" onclick="changeBgColor('#344a85')"></div>
                 <div class="color-dot" style="background:#437284;" onclick="changeBgColor('#437284')"></div>
-                <div class="color-dot" style="background:#a8890a;" onclick="change890a('#a8890a')"></div>
+                <div class="color-dot" style="background:#a8890a;" onclick="changeBgColor('#a8890a')"></div>
                 <div class="color-dot" style="background:#a3352a;" onclick="changeBgColor('#a3352a')"></div>
             </div>
 
@@ -234,7 +263,7 @@
 
             <h3>📰 Geliştirici Notları</h3>
             <div class="news-box">
-                <strong>[PORTFOLYO]</strong> Bu sitedeki tüm oyunlar tamamen benim tarafımdan geliştirilmektedir.
+                <strong>[PORTFOLYO]</strong> 15 kategori aktif! Sitedeki tüm oyunlar tamamen benim tarafımdan geliştirilmektedir.
             </div>
 
         </div>
@@ -243,13 +272,33 @@
     <div class="hero-section">
         <h1>Pixi<span>Verse</span></h1>
         <p>Tamamen Benim Tarafımdan Yapılan Özel Oyunlar</p>
-        <input type="text" class="search-bar" id="search" placeholder="Oyunlarım arasında ara..." onkeyup="filterGames()">
+        <input type="text" class="search-bar" id="search" placeholder="Oyun adı veya anahtar kelime yazın..." onkeyup="filterGames()">
+    </div>
+
+    <div class="section-title">Kategorilere Göre Göz At</div>
+    <div class="category-grid">
+        <div class="cat-box active" onclick="filterCategory('hepsi', this)">Hepsi</div>
+        <div class="cat-box" onclick="filterCategory('aksiyon', this)">Aksiyon</div>
+        <div class="cat-box" onclick="filterCategory('macera', this)">Macera</div>
+        <div class="cat-box" onclick="filterCategory('fps', this)">FPS</div>
+        <div class="cat-box" onclick="filterCategory('hayatta-kalma', this)">Hayatta Kalma</div>
+        <div class="cat-box" onclick="filterCategory('korku', this)">Korku</div>
+        <div class="cat-box" onclick="filterCategory('strateji', this)">Strateji</div>
+        <div class="cat-box" onclick="filterCategory('spor', this)">Spor</div>
+        <div class="cat-box" onclick="filterCategory('rpg', this)">RPG</div>
+        <div class="cat-box" onclick="filterCategory('simulasyon', this)">Simülasyon</div>
+        <div class="cat-box" onclick="filterCategory('yaris', this)">Yarış</div>
+        <div class="cat-box" onclick="filterCategory('bulmaca', this)">Bulmaca</div>
+        <div class="cat-box" onclick="filterCategory('arcade', this)">Arcade</div>
+        <div class="cat-box" onclick="filterCategory('dovus', this)">Dövüş</div>
+        <div class="cat-box" onclick="filterCategory('sandbox', this)">Sandbox</div>
     </div>
 
     <div class="section-title">Kendi Oyunlarım</div>
     <div class="games-container" id="gamesList">
         
-        <a href="balistik-top/index.html" class="game-card" data-name="balistik top firlatma fizik yok etme aksiyon">
+        <!-- Oyun 1: Balistik Top -->
+        <a href="balistik-top/index.html" class="game-card" data-name="balistik top firlatma fizik yok etme aksiyon" data-cat="aksiyon">
             <div class="game-thumb">⚽</div>
             <div class="game-info">
                 <h3>Balistik Top Oyunu</h3>
@@ -261,7 +310,8 @@
             </div>
         </a>
 
-        <a href="yakalama-oyunu/index.html" class="game-card" data-name="altin yakalama sepet dusen nesne arcade bulmaca eğlenceli">
+        <!-- Oyun 2: Altın Avcısı -->
+        <a href="yakalama-oyunu/index.html" class="game-card" data-name="altin yakalama sepet dusen nesne arcade bulmaca eğlenceli" data-cat="bulmaca">
             <div class="game-thumb">🪙</div>
             <div class="game-info">
                 <h3>Altın Avcısı</h3>
@@ -276,6 +326,8 @@
     </div>
 
     <script>
+        let aktifKategori = 'hepsi';
+
         function toggleMenu() {
             let dropdown = document.getElementById("myDropdown");
             dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
@@ -293,13 +345,26 @@
             document.documentElement.style.setProperty('--parlaklik', val + '%');
         }
 
+        function filterCategory(cat, element) {
+            aktifKategori = cat;
+            let boxes = document.getElementsByClassName('cat-box');
+            for(let box of boxes) box.classList.remove('active');
+            element.classList.add('active');
+            filterGames();
+        }
+
         function filterGames() {
             let input = document.getElementById('search').value.toLowerCase();
             let cards = document.getElementsByClassName('game-card');
             
             for (let i = 0; i < cards.length; i++) {
-                let name = cards[i].getAttribute('data-name').toLowerCase();
-                if (name.includes(input)) {
+                let name = cards[i].getAttribute('data-name');
+                let cat = cards[i].getAttribute('data-cat');
+                
+                let aramaDurumu = name.includes(input);
+                let kategoriDurumu = (aktifKategori === 'hepsi' || cat === aktifKategori);
+
+                if (aramaDurumu && kategoriDurumu) {
                     cards[i].style.display = "";
                 } else {
                     cards[i].style.display = "none";
