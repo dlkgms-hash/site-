@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixiVerse - Oyun Mağazası</title>
     <style>
-        /* CSS Değişkenleri (Ayarlar panelinden dinamik olarak değişecek) */
         :root {
-            --ana-renk: #ff4757;        /* Varsayılan detay rengi */
-            --arka-plan: #0f1015;       /* Varsayılan koyu arka plan */
+            --ana-renk: #ff4757;        
+            --arka-plan: #140405;       
             --panel-arkaplan: #1a1b24;
             --yazi-rengi: #ffffff;
             --parlaklik: 100%;
@@ -27,7 +26,6 @@
             transition: background 0.4s, filter 0.2s;
         }
 
-        /* Ayarlar Menüsü Konumu */
         .settings-container {
             position: fixed;
             top: 20px;
@@ -48,11 +46,9 @@
             width: 100%;
             text-align: left;
             font-size: 16px;
-            transition: 0.2s;
         }
         .settings-btn:hover { border-color: var(--ana-renk); }
 
-        /* Aşağı Doğru Açılan Panel */
         .settings-dropdown {
             background-color: var(--panel-arkaplan);
             border-radius: 8px;
@@ -68,7 +64,6 @@
         .settings-dropdown h3 { margin: 15px 0 8px 0; font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
         .settings-dropdown h3:first-child { margin-top: 0; }
 
-        /* Renk Izgaraları (15 Renk) */
         .color-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -85,14 +80,12 @@
         }
         .color-dot:hover { transform: scale(1.1); border-color: white; }
 
-        /* Parlaklık Çubuğu */
         .slider {
             width: 100%;
             accent-color: var(--ana-renk);
             cursor: pointer;
         }
 
-        /* Haberler Kutusu */
         .news-box {
             background: rgba(255,255,255,0.03);
             padding: 10px;
@@ -103,7 +96,6 @@
             border-left: 3px solid var(--ana-renk);
         }
 
-        /* Üst Başlık ve Arama Çubuğu */
         .hero-section {
             text-align: center;
             margin-top: 12vh;
@@ -118,7 +110,7 @@
             padding: 15px 25px;
             font-size: 18px;
             border: 2px solid #2a2a35;
-            border-radius: 8px; /* Steam tarzı köşeli yapı */
+            border-radius: 8px;
             background-color: var(--panel-arkaplan);
             color: white;
             outline: none;
@@ -126,7 +118,6 @@
         }
         .search-bar:focus { border-color: var(--ana-renk); box-shadow: 0 0 10px var(--ana-renk); }
 
-        /* Steam Tarzı Kategori Kutucukları */
         .section-title {
             width: 85%;
             max-width: 1200px;
@@ -137,6 +128,7 @@
             letter-spacing: 1px;
         }
 
+        /* Steam Tarzı 15 Kategori Izgarası */
         .category-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -147,32 +139,25 @@
         }
 
         .cat-box {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), var(--panel-arkaplan);
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), var(--panel-arkaplan);
             border: 1px solid #2a2a35;
-            padding: 25px 15px;
+            padding: 20px 10px;
             border-radius: 6px;
             text-align: center;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 13px;
             letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-        .cat-box:hover {
+        .cat-box:hover, .cat-box.active {
             border-color: var(--ana-renk);
             transform: translateY(-3px);
             background: var(--ana-renk);
             color: white;
         }
-        .cat-box.active {
-            background: var(--ana-renk);
-            border-color: var(--ana-renk);
-            color: white;
-        }
 
-        /* Oyunlar Listesi */
         .games-container {
             width: 85%;
             max-width: 1200px;
@@ -182,7 +167,6 @@
             padding-bottom: 100px;
         }
 
-        /* Steam Vitrini Tarzı Oyun Kartı */
         .game-card {
             background-color: var(--panel-arkaplan);
             border-radius: 6px;
@@ -198,7 +182,7 @@
         .game-thumb {
             width: 100%;
             height: 160px;
-            background: linear-gradient(135deg, #1b2838, #2a475e); /* Steam Mavisi tonlarında geçiş */
+            background: linear-gradient(135deg, #1b2838, #2a475e);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -256,7 +240,7 @@
                 <div class="color-dot" style="background:#e74c3c;" onclick="changeMainColor('#e74c3c')"></div>
             </div>
 
-            <h3>🌌 Bölüm 2: Arka Plan Rengi (Koyu)</h3>
+            <h3>🌌 Bölüm 2: Arka Plan Rengi (Uyumlu Koyu)</h3>
             <div class="color-grid">
                 <div class="color-dot" style="background:#1a0709;" onclick="changeBgColor('#1a0709')"></div>
                 <div class="color-dot" style="background:#04140a;" onclick="changeBgColor('#04140a')"></div>
@@ -280,7 +264,7 @@
 
             <h3>📰 Oyun Haberleri</h3>
             <div class="news-box">
-                <strong>[DURUM]</strong> Ayarlar menüsü tamamen güncellendi. İstediğin renk kombinasyonunu oluşturabilirsin!
+                <strong>[GÜNCELLEME]</strong> PixiVerse v2.0 Aktif! 15 Uyumlu Koyu Tema ve 15 Steam tarzı kategori eklendi.
             </div>
 
         </div>
@@ -288,7 +272,7 @@
 
     <div class="hero-section">
         <h1>Pixi<span>Verse</span></h1>
-        <input type="text" class="search-bar" id="search" placeholder="Oyun adı veya anahtar kelime yazın..." onkeyup="filterGames()">
+        <input type="text" class="search-bar" id="search" placeholder="Oyun adı, kategori veya anahtar kelime yazın..." onkeyup="filterGames()">
     </div>
 
     <div class="section-title">Kategorilere Göre Göz At</div>
@@ -303,6 +287,11 @@
         <div class="cat-box" onclick="filterCategory('spor', this)">Spor</div>
         <div class="cat-box" onclick="filterCategory('rpg', this)">RPG</div>
         <div class="cat-box" onclick="filterCategory('simulasyon', this)">Simülasyon</div>
+        <div class="cat-box" onclick="filterCategory('yaris', this)">Yarış</div>
+        <div class="cat-box" onclick="filterCategory('bulmaca', this)">Bulmaca</div>
+        <div class="cat-box" onclick="filterCategory('arcade', this)">Arcade</div>
+        <div class="cat-box" onclick="filterCategory('dovus', this)">Dövüş</div>
+        <div class="cat-box" onclick="filterCategory('sandbox', this)">Sandbox</div>
     </div>
 
     <div class="section-title">Oyunlar</div>
@@ -320,25 +309,13 @@
             </div>
         </a>
 
-        <a href="oyunlar/ada/index.html" class="game-card" data-name="adada 100 gun zombi craft hayatta kalma macera" data-cat="hayatta-kalma">
-            <div class="game-thumb">🌲</div>
+        <a href="oyunlar/yaris/index.html" class="game-card" data-name="asfalt canavarlari hiz araba yaris" data-cat="yaris">
+            <div class="game-thumb">🏎️</div>
             <div class="game-info">
-                <h3>Adada 100 Gün</h3>
-                <p>Issız bir adada kaynakları toplayarak hayatta kalmaya çalışın.</p>
+                <h3>Asfalt Canavarları</h3>
+                <p>En hızlı sen ol, rakiplerini geride bırak.</p>
                 <div class="game-footer">
-                    <span class="game-tag">Hayatta Kalma</span>
-                    <span class="play-btn">Oyna</span>
-                </div>
-            </div>
-        </a>
-
-        <a href="oyunlar/samuray/index.html" class="game-card" data-name="siber samuray kilic aksiyon macera" data-cat="aksiyon">
-            <div class="game-thumb">🥷</div>
-            <div class="game-info">
-                <h3>Siber Samuray</h3>
-                <p>Geleceğin dünyasında kılıcınla düşmanları dilimle.</p>
-                <div class="game-footer">
-                    <span class="game-tag">Aksiyon</span>
+                    <span class="game-tag">Yarış</span>
                     <span class="play-btn">Oyna</span>
                 </div>
             </div>
@@ -349,40 +326,31 @@
     <script>
         let aktifKategori = 'hepsi';
 
-        // Ayarlar menüsünü açıp kapatma fonksiyonu
         function toggleMenu() {
             let dropdown = document.getElementById("myDropdown");
             dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
         }
 
-        // Bölüm 1: Yazı ve Detay Rengini Değiştirme
         function changeMainColor(color) {
             document.documentElement.style.setProperty('--ana-renk', color);
         }
 
-        // Bölüm 2: Arka Plan Rengini Değiştirme
         function changeBgColor(color) {
             document.documentElement.style.setProperty('--arka-plan', color);
         }
 
-        // Ekran Parlaklığı Ayarı
         function changeBrightness(val) {
             document.documentElement.style.setProperty('--parlaklik', val + '%');
         }
 
-        // Kategori Seçimi Fonksiyonu
         function filterCategory(cat, element) {
             aktifKategori = cat;
-            
-            // Tıklanan kutuyu aktif yap, diğerlerinin aktifliğini kaldır
             let boxes = document.getElementsByClassName('cat-box');
             for(let box of boxes) box.classList.remove('active');
             element.classList.add('active');
-
             filterGames();
         }
 
-        // Gelişmiş Filtreleme (Arama Çubuğu + Kategori Kutuları Ortak Çalışır)
         function filterGames() {
             let input = document.getElementById('search').value.toLowerCase();
             let cards = document.getElementsByClassName('game-card');
