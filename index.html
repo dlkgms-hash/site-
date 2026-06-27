@@ -6,8 +6,8 @@
     <title>PixiVerse - Oyun Mağazası</title>
     <style>
         :root {
-            --ana-renk: #ff4757;        
-            --arka-plan: #140405;       
+            --ana-renk: #ff4757;        /* Canlı Renk */
+            --arka-plan: #b3323d;       /* Net Anlaşılan Koyun Ton */
             --panel-arkaplan: #1a1b24;
             --yazi-rengi: #ffffff;
             --parlaklik: 100%;
@@ -47,7 +47,6 @@
             text-align: left;
             font-size: 16px;
         }
-        .settings-btn:hover { border-color: var(--ana-renk); }
 
         .settings-dropdown {
             background-color: var(--panel-arkaplan);
@@ -128,7 +127,6 @@
             letter-spacing: 1px;
         }
 
-        /* Steam Tarzı 15 Kategori Izgarası */
         .category-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -223,6 +221,7 @@
             
             <h3>🎨 Bölüm 1: Yazı & Detay Rengi</h3>
             <div class="color-grid">
+                <!-- 15 Canlı Belirgin Renk -->
                 <div class="color-dot" style="background:#ff4757;" onclick="changeMainColor('#ff4757')"></div>
                 <div class="color-dot" style="background:#2ed573;" onclick="changeMainColor('#2ed573')"></div>
                 <div class="color-dot" style="background:#1e90ff;" onclick="changeMainColor('#1e90ff')"></div>
@@ -240,23 +239,24 @@
                 <div class="color-dot" style="background:#e74c3c;" onclick="changeMainColor('#e74c3c')"></div>
             </div>
 
-            <h3>🌌 Bölüm 2: Arka Plan Rengi (Uyumlu Koyu)</h3>
+            <h3>🌌 Bölüm 2: Arka Plan Rengi (Hafif Koyu Tonu)</h3>
             <div class="color-grid">
-                <div class="color-dot" style="background:#1a0709;" onclick="changeBgColor('#1a0709')"></div>
-                <div class="color-dot" style="background:#04140a;" onclick="changeBgColor('#04140a')"></div>
-                <div class="color-dot" style="background:#030f1a;" onclick="changeBgColor('#030f1a')"></div>
-                <div class="color-dot" style="background:#1a1100;" onclick="changeBgColor('#1a1100')"></div>
-                <div class="color-dot" style="background:#100614;" onclick="changeBgColor('#100614')"></div>
-                <div class="color-dot" style="background:#1a0c11;" onclick="changeBgColor('#1a0c11')"></div>
-                <div class="color-dot" style="background:#001414;" onclick="changeBgColor('#001414')"></div>
-                <div class="color-dot" style="background:#141105;" onclick="changeBgColor('#141105')"></div>
-                <div class="color-dot" style="background:#1a0b0d;" onclick="changeBgColor('#1a0b0d')"></div>
-                <div class="color-dot" style="background:#0a140d;" onclick="changeBgColor('#0a140d')"></div>
-                <div class="color-dot" style="background:#051413;" onclick="changeBgColor('#051413')"></div>
-                <div class="color-dot" style="background:#070a14;" onclick="changeBgColor('#070a14')"></div>
-                <div class="color-dot" style="background:#091214;" onclick="changeBgColor('#091214')"></div>
-                <div class="color-dot" style="background:#141000;" onclick="changeBgColor('#141000')"></div>
-                <div class="color-dot" style="background:#140403;" onclick="changeBgColor('#140403')"></div>
+                <!-- Birinci bölümdeki renklerin çok az koyulaştırılmış halleri -->
+                <div class="color-dot" style="background:#b3323d;" onclick="changeBgColor('#b3323d')"></div>
+                <div class="color-dot" style="background:#209651;" onclick="changeBgColor('#209651')"></div>
+                <div class="color-dot" style="background:#1565b3;" onclick="changeBgColor('#1565b3')"></div>
+                <div class="color-dot" style="background:#b37302;" onclick="changeBgColor('#b37302')"></div>
+                <div class="color-dot" style="background:#6c3e7f;" onclick="changeBgColor('#6c3e7f')"></div>
+                <div class="color-dot" style="background:#b35576;" onclick="changeBgColor('#b35576')"></div>
+                <div class="color-dot" style="background:#00918d;" onclick="changeBgColor('#00918d')"></div>
+                <div class="color-dot" style="background:#a68e49;" onclick="changeBgColor('#a68e49')"></div>
+                <div class="color-dot" style="background:#b34b5a;" onclick="changeBgColor('#b34b5a')"></div>
+                <div class="color-dot" style="background:#549d64;" onclick="changeBgColor('#549d64')"></div>
+                <div class="color-dot" style="background:#277976;" onclick="changeBgColor('#277976')"></div>
+                <div class="color-dot" style="background:#344a85;" onclick="changeBgColor('#344a85')"></div>
+                <div class="color-dot" style="background:#437284;" onclick="changeBgColor('#437284')"></div>
+                <div class="color-dot" style="background:#a8890a;" onclick="changeBgColor('#a8890a')"></div>
+                <div class="color-dot" style="background:#a3352a;" onclick="changeBgColor('#a3352a')"></div>
             </div>
 
             <h3>☀️ Ekran Parlaklığı</h3>
@@ -264,7 +264,7 @@
 
             <h3>📰 Oyun Haberleri</h3>
             <div class="news-box">
-                <strong>[GÜNCELLEME]</strong> PixiVerse v2.0 Aktif! 15 Uyumlu Koyu Tema ve 15 Steam tarzı kategori eklendi.
+                <strong>[GÜNCELLEME]</strong> PixiVerse v2.1: Arka plan renk tonları daha belirgin hale getirildi.
             </div>
 
         </div>
@@ -297,6 +297,7 @@
     <div class="section-title">Oyunlar</div>
     <div class="games-container" id="gamesList">
         
+        <!-- Oyun Kartı 1 -->
         <a href="oyunlar/doom/index.html" class="game-card" data-name="uzay operasyonu silah fps askeri aksiyon" data-cat="fps">
             <div class="game-thumb">💥</div>
             <div class="game-info">
@@ -309,6 +310,7 @@
             </div>
         </a>
 
+        <!-- Oyun Kartı 2 -->
         <a href="oyunlar/yaris/index.html" class="game-card" data-name="asfalt canavarlari hiz araba yaris" data-cat="yaris">
             <div class="game-thumb">🏎️</div>
             <div class="game-info">
