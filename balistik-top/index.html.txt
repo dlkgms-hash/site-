@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Balistik Top Oyunu</title>
+    <style>
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: #0f172a;
+            font-family: 'Segoe UI', sans-serif; color: white;
+        }
+        canvas {
+            display: block; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at bottom left, #1e293b, #0f172a);
+        }
+        #ui {
+            position: absolute; top: 20px; left: 20px;
+            display: flex; gap: 30px; font-size: 24px; font-weight: bold;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.5); z-index: 10;
+        }
+        /* Güç Barı Tasarımı */
+        #powerBarContainer {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            width: 300px; height: 25px; background: #334155;
+            border: 3px solid #fff; border-radius: 12px; overflow: hidden; z-index: 10;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        #powerBar {
+            width: 0%; height: 100%;
+            background: linear-gradient(to right, #2ed573, #ffa502, #ff4757);
+            transition: width 0.02s linear;
+        }
+        #powerLabel {
+            position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%);
+            font-size: 18px; font-weight: bold; text-transform: uppercase; z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <div>Skor: <span id="score">0</span></div>
+        <div>Atış Hakkı: <span id="shots">5</span></div>
+    </div>
+
+    <div id="powerLabel">Güç Ayarla (Tıkla fırlat!)</div>
+    <div id="powerBarContainer">
+        <div id="powerBar"></div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Tam ekran boyutu
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let score = 0;
+        let shots = 5;
+        
+        // Güç Barı Değişkenleri
+        let power = 1;
+        let powerDirection = 1; // 1 ileri, -1 geri
+
+        // Top Arabası (Sol Alt Köşe)
+        const tank = { x: 100, y: 0, width: 80, height: 40 };
+        
+        // Top Özellikleri
+        let ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 15, launched: false };
+        // Hedef
+        let target = { x: 0, y: 0, radius: 35, color: "#ff4757" };
+        let mouse = { x: 0, y: 0 };
+
+        tank.y = canvas.height - 60;
+        ball.x = tank.x;
+        ball.y = tank.y - 20;
+
+        function initPositions() {
+            tank.y = canvas.height - 60;
+            if (!ball.launched) {
+                ball.x = tank.x;
+                ball.y = tank.y - 20;
+            }
+            if (target.x === 0) moveTarget();
+        }
+
+        window.addEventListener("mousemove", (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener("mousedown", () => {
+            if (!ball.launched && shots > 0) {
+                ball.launched = true;
+                shots--;
+                document.getElementById("shots").innerText = shots;
+
+                // Açı hesaplama
+                let dx = mouse.x - tank.x;
+                let dy = mouse.y - (tank.y - 20);
+                let angle = Math.atan2(dy, dx);
+
+                // Atış gücünü bar değerine göre çarpanla (Maksimum güç 25)
+                let actualPower = (power / 100) * 25;
+                
+                ball.vx = Math.cos(angle) * actualPower;
+                ball.vy = Math.sin(angle) * actualPower;
+            }
+        });
+
+        function moveTarget() {
+            target.x = canvas.width * 0.6 + Math.random() * (canvas.width * 0.3);
+            target.y = canvas.height * 0.2 + Math.random() * (canvas.height * 0.5);
+        }
+
+        function resetBall() {
+            ball.launched = false;
+            ball.x = tank.x;
+            ball.y = tank.y - 20;
+            ball.vx = 0; ball.vy = 0;
+
+            if (shots <= 0) {
+                alert("Oyun Bitti! Toplam Skorun: " + score);
+                score = 0; shots = 5;
+                document.getElementById("score").innerText = score;
+                document.getElementById("shots").innerText = shots;
+                moveTarget();
+            }
+        }
+
+        function gameLoop() {
+            initPositions();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Güç Barı Mekaniği (Atış yapılmadıysa oynat)
+            if (!ball.launched) {
+                power += powerDirection * 2.5;
+                if (power >= 100) { power = 100; powerDirection = -1; }
+                if (power <= 1) { power = 1; powerDirection = 1; }
+                document.getElementById("powerBar").style.width = power + "%";
+            }
+
+            // 2. Hedefi Çiz
+            ctx.beginPath(); ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+            ctx.fillStyle = target.color; ctx.fill(); ctx.closePath();
+            ctx.beginPath(); ctx.arc(target.x, target.y, target.radius * 0.6, 0, Math.PI * 2);
+            ctx.fillStyle = "#fff"; ctx.fill(); ctx.closePath();
+
+            // 3. Nişan Çizgisi (Kılavuz)
+            if (!ball.launched) {
+                ctx.beginPath();
+                ctx.moveTo(tank.x, tank.y - 20);
+                let dx = mouse.x - tank.x; let dy = mouse.y - (tank.y - 20);
+                let angle = Math.atan2(dy, dx);
+                ctx.lineTo(tank.x + Math.cos(angle) * 100, (tank.y - 20) + Math.sin(angle) * 100);
+                ctx.strokeStyle = "rgba(46, 213, 115, 0.6)"; ctx.lineWidth = 4;
+                ctx.setLineDash([6, 6]); ctx.stroke(); ctx.setLineDash([]);
+            }
+
+            // 4. Top Arabasını (Tankı) Çiz
+            ctx.fillStyle = "#64748b";
+            ctx.fillRect(tank.x - tank.width/2, tank.y, tank.width, tank.height); // Gövde
+            ctx.fillStyle = "#475569";
+            ctx.beginPath(); ctx.arc(tank.x, tank.y, 25, 0, Math.PI, true); ctx.fill(); // Kule
+            
+            // Namlu
+            ctx.save();
+            ctx.translate(tank.x, tank.y - 15);
+            let tdx = mouse.x - tank.x; let tdy = mouse.y - (tank.y - 15);
+            ctx.rotate(Math.atan2(tdy, tdx));
+            ctx.fillStyle = "#334155";
+            ctx.fillRect(0, -8, 50, 16);
+            ctx.restore();
+
+            // 5. Topu Güncelle ve Çiz
+            if (ball.launched) {
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+                ball.vy += 0.25; // Yerçekimi
+
+                // Hedef Vuruldu mu?
+                let dx = ball.x - target.x; let dy = ball.y - target.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < ball.radius + target.radius) {
+                    score += 20; shots += 2;
+                    document.getElementById("score").innerText = score;
+                    document.getElementById("shots").innerText = shots;
+                    moveTarget(); resetBall();
+                }
+
+                if (ball.x > canvas.width || ball.y > canvas.height || ball.x < 0) {
+                    resetBall();
+                }
+
+                ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "#fbbf24"; ctx.fill();
+                ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke(); ctx.closePath();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+        gameLoop();
+    </script>
+</body>
+</html>

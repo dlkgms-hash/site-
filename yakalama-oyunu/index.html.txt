@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Altın Avcısı - Tam Ekran & Geliştirmeli</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #111;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
+        }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            display: flex;
+            gap: 30px;
+            pointer-events: none;
+        }
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 10;
+        }
+        .btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); background: #ff6b81; }
+        
+        /* Market Arayüzü */
+        #marketBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ffa502;
+            color: black;
+            font-size: 18px;
+        }
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+            max-width: 800px;
+        }
+        .market-item {
+            background: #222;
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .market-item h3 { margin: 0 0 10px 0; color: #ffd700; }
+        .market-item p { font-size: 14px; color: #ccc; }
+        .price { color: #2ed573; font-weight: bold; font-size: 18px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <div>Altın (Skor): <span id="score">0</span></div>
+        <div>Can: <span id="lives">3</span></div>
+    </div>
+
+    <button id="marketBtn" class="btn" onclick="openMarket()">🛒 Market / Geliştir</button>
+
+    <div id="gameOverScreen" class="screen" style="display: none;">
+        <h2 style="font-size: 48px; color: #ff4757;">OYUN BİTTİ</h2>
+        <p style="font-size: 24px;">Toplam Altın: <span id="finalScore">0</span></p>
+        <button class="btn" onclick="resetGame()" style="background: #2ed573;">Yeniden Başla</button>
+    </div>
+
+    <div id="marketScreen" class="screen" style="display: none;">
+        <h2>🛠️ GELİŞTİRME MAĞAZASI</h2>
+        <p>Mevcut Altınınız: <span id="marketGold">0</span></p>
+        <div class="market-grid">
+            <div class="market-item">
+                <h3>Sepet Hızı</h3>
+                <p>Sepetin hareket hızını artırır.</p>
+                <div class="price"><span id="speedCost">50</span> Altın</div>
+                <button class="btn" onclick="buyUpgrade('speed')">Satın Al</button>
+            </div>
+            <div class="market-item">
+                <h3>Mıknatıs Alanı</h3>
+                <p>Altınları yakınına geldiğinde çeker.</p>
+                <div class="price"><span id="magnetCost">100</span> Altın</div>
+                <button class="btn" onclick="buyUpgrade('magnet')">Satın Al</button>
+            </div>
+            <div class="market-item">
+                <h3>+1 Can</h3>
+                <p>Maksimum canınıza 1 hak ekler.</p>
+                <div class="price"><span id="lifeCost">150</span> Altın</div>
+                <button class="btn" onclick="buyUpgrade('life')">Satın Al</button>
+            </div>
+        </div>
+        <button class="btn" onclick="closeMarket()" style="background: #1e90ff;">Oyuna Dön</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Tam ekran boyutlandırma
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let score = 0;
+        let lives = 3;
+        let gameActive = true;
+        let isPaused = false;
+
+        // Geliştirme Seviyeleri ve Maliyetleri
+        let upgrades = {
+            speed: { level: 1, cost: 50 },
+            magnet: { level: 0, cost: 100 },
+            life: { level: 3, cost: 150 }
+        };
+
+        const basket = { x: window.innerWidth / 2, y: window.innerHeight - 80, width: 120, height: 25, speed: 10 };
+        let gold = { x: Math.random() * (window.innerWidth - 30), y: -50, size: 20, speed: 5 };
+        let keys = { Right: false, Left: false };
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowRight" || e.key === "d") keys.Right = true;
+            if (e.key === "ArrowLeft" || e.key === "a") keys.Left = true;
+        });
+
+        document.addEventListener("keyup", (e) => {
+            if (e.key === "ArrowRight" || e.key === "d") keys.Right = false;
+            if (e.key === "ArrowLeft" || e.key === "a") keys.Left = false;
+        });
+
+        function openMarket() {
+            isPaused = true;
+            document.getElementById("marketGold").innerText = score;
+            document.getElementById("marketScreen").style.display = "flex";
+        }
+
+        function closeMarket() {
+            isPaused = false;
+            document.getElementById("marketScreen").style.display = "none";
+            update();
+        }
+
+        function buyUpgrade(type) {
+            if (score >= upgrades[type].cost) {
+                score -= upgrades[type].cost;
+                upgrades[type].level++;
+                
+                // Geliştirme etkileri
+                if (type === 'speed') basket.speed += 3;
+                if (type === 'life') { lives++; upgrades[type].level++; }
+                
+                // Maliyeti katla
+                upgrades[type].cost = Math.floor(upgrades[type].cost * 1.8);
+                
+                // Arayüzü güncelle
+                document.getElementById("score").innerText = score;
+                document.getElementById("marketGold").innerText = score;
+                document.getElementById("lives").innerText = lives;
+                document.getElementById(type + "Cost").innerText = upgrades[type].cost;
+            } else {
+                alert("Yetersiz Altın!");
+            }
+        }
+
+        function resetGame() {
+            score = 0; lives = 3; gameActive = true; isPaused = false;
+            basket.speed = 10;
+            upgrades.speed = { level: 1, cost: 50 };
+            upgrades.magnet = { level: 0, cost: 100 };
+            upgrades.life = { level: 3, cost: 150 };
+            
+            document.getElementById("speedCost").innerText = 50;
+            document.getElementById("magnetCost").innerText = 100;
+            document.getElementById("lifeCost").innerText = 150;
+            
+            gold.y = -50; gold.x = Math.random() * (canvas.width - 30); gold.speed = 5;
+            document.getElementById("gameOverScreen").style.display
